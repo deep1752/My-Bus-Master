@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic"; // ⛑️ This disables static export for this page
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,6 @@ import { toast } from "sonner";
 export default function TravelsManager({ onEdit, onAdd }) {
   const router = useRouter();
 
-  // State hooks for data, filters, loading, and selection
   const [travels, setTravels] = useState([]);
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
@@ -21,14 +21,12 @@ export default function TravelsManager({ onEdit, onAdd }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
-  // Fetch all travels from API
   const fetchTravels = async () => {
     try {
       setLoading(true);
       const response = await fetch("http://127.0.0.1:8000/travels/get");
       const data = await response.json();
 
-      // Sort travels by last modified date
       const sortedData = data.sort((a, b) => {
         const dateA = new Date(a.updated_at || a.created_at);
         const dateB = new Date(b.updated_at || b.created_at);
@@ -44,12 +42,10 @@ export default function TravelsManager({ onEdit, onAdd }) {
     }
   };
 
-  // Fetch travels on component mount
   useEffect(() => {
     fetchTravels();
   }, []);
 
-  // Handle deletion of one or more travel entries
   const handleDelete = async (idList) => {
     const confirmed = confirm(
       `Are you sure you want to delete ${idList.length > 1 ? "these travels" : "this travel"}?`
@@ -79,16 +75,12 @@ export default function TravelsManager({ onEdit, onAdd }) {
     }
   };
 
-  // Toggle individual checkbox selection
   const toggleSelectOne = (id) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter((sid) => sid !== id));
-    } else {
-      setSelectedIds([...selectedIds, id]);
-    }
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
+    );
   };
 
-  // Toggle select all checkbox
   const toggleSelectAll = () => {
     if (selectAll) {
       setSelectedIds([]);
@@ -98,13 +90,11 @@ export default function TravelsManager({ onEdit, onAdd }) {
     setSelectAll(!selectAll);
   };
 
-  // Filter travels based on "From" and "To" locations
   const filteredTravels = travels.filter((t) =>
     t.from_location.toLowerCase().includes(searchFrom.toLowerCase()) &&
     t.to_location.toLowerCase().includes(searchTo.toLowerCase())
   );
 
-  // Download filtered travel list as PDF
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text("Travel List", 14, 10);
@@ -123,7 +113,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
     doc.save("travels.pdf");
   };
 
-  // Download filtered travel list as Excel
   const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       filteredTravels.map((t) => ({
@@ -145,7 +134,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
     saveAs(blob, "travels.xlsx");
   };
 
-  // Show loading spinner while data is being fetched
   if (loading) {
     return (
       <div className="loader-container">
@@ -156,7 +144,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
 
   return (
     <div className="product-manager-wrapper">
-      {/* Header section with filters and actions */}
       <div className="header-bar">
         <div className="product-header">
           <button onClick={() => router.push("/admin")} className="back-btn">
@@ -167,7 +154,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
         <h2 className="title">Travels Manager</h2>
 
         <div className="actions">
-          {/* Filter/search input fields */}
           <div className="search-bar">
             <input
               type="text"
@@ -194,7 +180,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
             </button>
           </div>
 
-          {/* Action buttons */}
           <Link href="/admin/travels/add">
             <button className="add-button" onClick={onAdd}>
               ➕ Add
@@ -221,7 +206,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
         </div>
       </div>
 
-      {/* Travel listing table */}
       <div className="table-container">
         <table className="product-table">
           <thead>
@@ -244,7 +228,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
             </tr>
           </thead>
           <tbody>
-            {/* Empty state message */}
             {filteredTravels.length === 0 ? (
               <tr>
                 <td colSpan="9" className="no-users-found">
@@ -252,7 +235,6 @@ export default function TravelsManager({ onEdit, onAdd }) {
                 </td>
               </tr>
             ) : (
-              // Render each travel row
               filteredTravels.map((t) => (
                 <tr key={t.id}>
                   <td>
@@ -268,8 +250,8 @@ export default function TravelsManager({ onEdit, onAdd }) {
                       alt="travel"
                       width={60}
                       height={40}
-                      style={{ objectFit: 'cover' }}
-                      unoptimized={true} // Add this if you're having issues with external images
+                      style={{ objectFit: "cover" }}
+                      unoptimized={true}
                     />
                   </td>
                   <td>{t.from_location}</td>

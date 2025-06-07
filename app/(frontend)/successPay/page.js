@@ -8,6 +8,9 @@ import axios from 'axios';
 import { CheckCircle, Copy, Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+// 🚫 Disable prerendering
+export const dynamic = 'force-dynamic';
+
 const SuccessPay = () => {
   const router = useRouter();
   const searchParams = useSearchParams();

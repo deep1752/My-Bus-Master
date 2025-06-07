@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { CiSearch } from "react-icons/ci";
 import { CgUser } from "react-icons/cg";
 import { toast } from "sonner";
-import logo from "../public/Logo.png";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/UserContext";
 
@@ -18,7 +18,10 @@ const Navbar = ({ Searchproducts }) => {
     <nav className="navbar">
       {/* Logo */}
       <Link href="/" className="navbar__logo">
-        {/* <Image src={logo} width={140} height={25} alt="logo" /> */}
+        {/* Either use an image logo (make sure Logo.png exists in public folder) */}
+        {/* <Image src="/Logo.png" width={140} height={25} alt="BusExpress logo" /> */}
+        
+        {/* Or use text logo */}
         <span className="navbar__logo-text">BusExpress</span>
       </Link>
 
@@ -40,6 +43,12 @@ const Navbar = ({ Searchproducts }) => {
           <Link href="/contact" className="navbar__link">Contact Us</Link>
         </li>
       </ul>
+
+      {/* Search Bar (optional) */}
+      {/* <div className="navbar__search">
+        <CiSearch size={22} />
+        <input type="text" placeholder="Search..." />
+      </div> */}
 
       <div className="navbar__actions">
         {/* User Login/Dropdown */}
@@ -89,3 +98,5 @@ const Navbar = ({ Searchproducts }) => {
 };
 
 export default Navbar;
+
+

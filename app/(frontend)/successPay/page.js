@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUserContext } from "@/context/UserContext";
 import { toast } from "sonner";
@@ -8,7 +8,6 @@ import axios from "axios";
 import { CheckCircle, Copy, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
-
 
 const SuccessPay = () => {
   const router = useRouter();
@@ -19,44 +18,7 @@ const SuccessPay = () => {
   const [bookingId, setBookingId] = useState(null);
   const [isCopying, setIsCopying] = useState(false);
 
-  useEffect(() => {
-    const fetchSessionData = async () => {
-      const sessionId = searchParams.get('session_id');
-      if (!sessionId) {
-        toast.error("Invalid session ID");
-        router.push("/");
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/stripe/session?session_id=${sessionId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch session data");
-        }
-        const data = await response.json();
-        setSessionData(data);
-
-        const travelId = data.metadata.travel_id;
-        const travelResponse = await axios.get(
-          `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
-        );
-        setTravelDetails(travelResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        toast.error("Failed to verify payment");
-        router.push("/");
-      }
-    };
-
-    if (!loading && !userInfo) {
-      toast.error("Please login to complete booking");
-      router.push("/login");
-    } else if (!loading && userInfo) {
-      fetchSessionData();
-    }
-  }, [loading, userInfo]);
-
-  const updateAvailableSeats = async (travelId, bookedSeats) => {
+  const updateAvailableSeats = useCallback(async (travelId, bookedSeats) => {
     try {
       const currentTravel = await axios.get(
         `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
@@ -79,7 +41,99 @@ const SuccessPay = () => {
       console.error("Error updating seats:", error);
       return false;
     }
-  };
+  }, []);
+
+  const createBooking = useCallback(async () => {
+    if (!userInfo || !sessionData || !travelDetails) return;
+
+    const now = new Date().toISOString();
+
+    const bookingData = {
+      user_id: userInfo.id,
+      from_location: sessionData.metadata.from_location,
+      to_location: sessionData.metadata.to_location,
+      seats: parseInt(sessionData.metadata.seats),
+      price_per_seat: parseFloat(sessionData.metadata.price_per_seat),
+      total_price: parseFloat(sessionData.metadata.total_price),
+      travel_id: sessionData.metadata.travel_id,
+      created_at: now,
+      updated_at: now,
+    };
+
+    try {
+      const bookingResponse = await axios.post(
+        "http://127.0.0.1:8000/bookings/post",
+        bookingData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (bookingResponse.status === 200 || bookingResponse.status === 201) {
+        setBookingId(bookingResponse.data.id);
+        const seatsUpdated = await updateAvailableSeats(
+          sessionData.metadata.travel_id,
+          bookingData.seats
+        );
+
+        if (seatsUpdated) {
+          toast.success("Booking successful! Seats updated.");
+        } else {
+          toast.warning("Booking created but failed to update seats. Please contact support.");
+        }
+      } else {
+        toast.error("Booking failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Booking Error:", error);
+      toast.error("Error while creating booking.");
+    }
+  }, [sessionData, userInfo, travelDetails, updateAvailableSeats]);
+
+  const fetchSessionData = useCallback(async () => {
+    const sessionId = searchParams.get('session_id');
+    if (!sessionId) {
+      toast.error("Invalid session ID");
+      router.push("/");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/stripe/session?session_id=${sessionId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch session data");
+      }
+      const data = await response.json();
+      setSessionData(data);
+
+      const travelId = data.metadata.travel_id;
+      const travelResponse = await axios.get(
+        `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
+      );
+      setTravelDetails(travelResponse.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to verify payment");
+      router.push("/");
+    }
+  }, [searchParams, router]);
+
+  useEffect(() => {
+    if (!loading && !userInfo) {
+      toast.error("Please login to complete booking");
+      router.push("/login");
+    } else if (!loading && userInfo) {
+      fetchSessionData();
+    }
+  }, [loading, userInfo, router, fetchSessionData]);
+
+  useEffect(() => {
+    if (sessionData && travelDetails) {
+      createBooking();
+    }
+  }, [sessionData, travelDetails, createBooking]);
 
   const copyToClipboard = () => {
     setIsCopying(true);
@@ -94,62 +148,6 @@ const SuccessPay = () => {
         setTimeout(() => setIsCopying(false), 1000);
       });
   };
-
-  useEffect(() => {
-    const createBooking = async () => {
-      if (!userInfo || !sessionData || !travelDetails) return;
-
-      const now = new Date().toISOString();
-
-
-      const bookingData = {
-        user_id: userInfo.id,
-        from_location: sessionData.metadata.from_location,
-        to_location: sessionData.metadata.to_location,
-        seats: parseInt(sessionData.metadata.seats),
-        price_per_seat: parseFloat(sessionData.metadata.price_per_seat),
-        total_price: parseFloat(sessionData.metadata.total_price),
-        travel_id: sessionData.metadata.travel_id,
-        created_at: now,
-        updated_at: now,
-      };
-
-      try {
-        const bookingResponse = await axios.post(
-          "http://127.0.0.1:8000/bookings/post",
-          bookingData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (bookingResponse.status === 200 || bookingResponse.status === 201) {
-          setBookingId(bookingResponse.data.id); // Store the booking ID
-          const seatsUpdated = await updateAvailableSeats(
-            sessionData.metadata.travel_id,
-            bookingData.seats
-          );
-
-          if (seatsUpdated) {
-            toast.success("Booking successful! Seats updated.");
-          } else {
-            toast.warning("Booking created but failed to update seats. Please contact support.");
-          }
-        } else {
-          toast.error("Booking failed. Please try again.");
-        }
-      } catch (error) {
-        console.error("Booking Error:", error);
-        toast.error("Error while creating booking.");
-      }
-    };
-
-    if (sessionData && travelDetails) {
-      createBooking();
-    }
-  }, [sessionData, userInfo, travelDetails]);
 
   return (
     <div className="payment-success-container">
@@ -180,7 +178,6 @@ const SuccessPay = () => {
               A confirmation has been sent to your email.
             </p>
 
-            {/* New View Booking Button */}
             <div className="mt-6">
               <Button
                 onClick={() => router.push(`/bookings`)}
@@ -200,4 +197,8 @@ const SuccessPay = () => {
     </div>
   );
 };
+
 export default SuccessPay;
+
+
+

@@ -25,8 +25,8 @@ export default function BookingManager() {
     fetch("http://127.0.0.1:8000/bookings/get")
       .then((res) => res.json())
       .then((data) => {
-        setBookings(data); // Store fetched bookings
-        setLoading(false); // Stop loading spinner
+        setBookings(data);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching bookings:", err);
@@ -43,7 +43,6 @@ export default function BookingManager() {
     if (!confirmed) return;
 
     try {
-      // Send DELETE request for each selected booking
       const deleteRequests = idList.map((id) =>
         fetch(`http://127.0.0.1:8000/bookings/delete/${id}`, {
           method: "DELETE",
@@ -55,7 +54,6 @@ export default function BookingManager() {
 
       if (allSuccessful) {
         toast.success("Booking(s) deleted successfully!");
-        // Remove deleted bookings from UI
         setBookings(bookings.filter((booking) => !idList.includes(booking.id)));
         setSelectedIds([]);
         setSelectAll(false);
@@ -77,7 +75,7 @@ export default function BookingManager() {
     }
   };
 
-  // Toggle select all bookings in the filtered list
+  // Toggle select all bookings
   const toggleSelectAll = () => {
     if (selectAll) {
       setSelectedIds([]);
@@ -92,7 +90,7 @@ export default function BookingManager() {
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
-  // Filter bookings based on selected field and search term
+  // Filter bookings based on search
   const filteredBookings = sortedBookings.filter((booking) => {
     const term = searchTerm.toLowerCase();
     switch (searchField) {
@@ -111,7 +109,7 @@ export default function BookingManager() {
     }
   });
 
-  // Export filtered bookings to PDF
+  // Export to PDF
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text("Booking List", 14, 10);
@@ -131,7 +129,7 @@ export default function BookingManager() {
     doc.save("bookings.pdf");
   };
 
-  // Export filtered bookings to Excel
+  // Export to Excel
   const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       filteredBookings.map((b) => ({
@@ -152,7 +150,6 @@ export default function BookingManager() {
     saveAs(blob, "bookings.xlsx");
   };
 
-  // Show loader while fetching bookings
   if (loading) {
     return (
       <div className="loader-container">
@@ -161,10 +158,8 @@ export default function BookingManager() {
     );
   }
 
-  // Main component return
   return (
     <div className="product-manager-wrapper">
-      {/* Header Section */}
       <div className="header-bar">
         <div className="product-header">
           <button onClick={() => router.push("/admin")} className="back-btn">
@@ -173,7 +168,6 @@ export default function BookingManager() {
         </div>
         <h2 className="title">Booking Manager</h2>
 
-        {/* Action Buttons and Search */}
         <div className="actions">
           <select
             value={searchField}
@@ -224,7 +218,6 @@ export default function BookingManager() {
         </div>
       </div>
 
-      {/* Table Section */}
       <div className="table-container">
         <table className="product-table">
           <thead>
@@ -251,7 +244,7 @@ export default function BookingManager() {
             {filteredBookings.length === 0 ? (
               <tr>
                 <td colSpan="10" className="no-users-found">
-                  🔍 No bookings found matching "{searchTerm}"
+                  🔍 No bookings found matching &quot;{searchTerm}&quot;
                 </td>
               </tr>
             ) : (

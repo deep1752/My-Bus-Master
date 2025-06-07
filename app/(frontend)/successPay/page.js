@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useUserContext } from "@/context/UserContext";
-import { toast } from "sonner";
-import axios from "axios";
-import { CheckCircle, Copy, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useUserContext } from '@/context/UserContext';
+import { toast } from 'sonner';
+import axios from 'axios';
+import { CheckCircle, Copy, Loader2, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const SuccessPay = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userInfo, loading } = useUserContext();
+
   const [sessionData, setSessionData] = useState(null);
   const [travelDetails, setTravelDetails] = useState(null);
   const [bookingId, setBookingId] = useState(null);
@@ -20,25 +20,24 @@ const SuccessPay = () => {
 
   const updateAvailableSeats = useCallback(async (travelId, bookedSeats) => {
     try {
-      const currentTravel = await axios.get(
+      const { data } = await axios.get(
         `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
       );
-      const currentSeats = currentTravel.data.seats;
-      const updatedSeats = currentSeats - bookedSeats;
+      const updatedSeats = data.seats - bookedSeats;
 
       await axios.put(
         `http://127.0.0.1:8000/travels/update/${travelId}`,
         { seats: updatedSeats },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
 
       return true;
     } catch (error) {
-      console.error("Error updating seats:", error);
+      console.error('Error updating seats:', error);
       return false;
     }
   }, []);
@@ -47,83 +46,76 @@ const SuccessPay = () => {
     if (!userInfo || !sessionData || !travelDetails) return;
 
     const now = new Date().toISOString();
+    const metadata = sessionData.metadata;
 
     const bookingData = {
       user_id: userInfo.id,
-      from_location: sessionData.metadata.from_location,
-      to_location: sessionData.metadata.to_location,
-      seats: parseInt(sessionData.metadata.seats),
-      price_per_seat: parseFloat(sessionData.metadata.price_per_seat),
-      total_price: parseFloat(sessionData.metadata.total_price),
-      travel_id: sessionData.metadata.travel_id,
+      from_location: metadata.from_location,
+      to_location: metadata.to_location,
+      seats: parseInt(metadata.seats),
+      price_per_seat: parseFloat(metadata.price_per_seat),
+      total_price: parseFloat(metadata.total_price),
+      travel_id: metadata.travel_id,
       created_at: now,
       updated_at: now,
     };
 
     try {
-      const bookingResponse = await axios.post(
-        "http://127.0.0.1:8000/bookings/post",
+      const { data, status } = await axios.post(
+        'http://127.0.0.1:8000/bookings/post',
         bookingData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { 'Content-Type': 'application/json' } }
       );
 
-      if (bookingResponse.status === 200 || bookingResponse.status === 201) {
-        setBookingId(bookingResponse.data.id);
-        const seatsUpdated = await updateAvailableSeats(
-          sessionData.metadata.travel_id,
-          bookingData.seats
-        );
+      if (status === 200 || status === 201) {
+        setBookingId(data.id);
+        const updated = await updateAvailableSeats(metadata.travel_id, bookingData.seats);
 
-        if (seatsUpdated) {
-          toast.success("Booking successful! Seats updated.");
+        if (updated) {
+          toast.success('Booking successful! Seats updated.');
         } else {
-          toast.warning("Booking created but failed to update seats. Please contact support.");
+          toast.warning('Booking done, but seat update failed.');
         }
       } else {
-        toast.error("Booking failed. Please try again.");
+        toast.error('Booking failed. Please try again.');
       }
     } catch (error) {
-      console.error("Booking Error:", error);
-      toast.error("Error while creating booking.");
+      console.error('Booking Error:', error);
+      toast.error('Booking failed due to an error.');
     }
   }, [sessionData, userInfo, travelDetails, updateAvailableSeats]);
 
   const fetchSessionData = useCallback(async () => {
     const sessionId = searchParams.get('session_id');
     if (!sessionId) {
-      toast.error("Invalid session ID");
-      router.push("/");
+      toast.error('Missing session ID.');
+      router.push('/');
       return;
     }
 
     try {
-      const response = await fetch(`/api/stripe/session?session_id=${sessionId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch session data");
-      }
-      const data = await response.json();
+      const res = await fetch(`/api/stripe/session?session_id=${sessionId}`);
+      if (!res.ok) throw new Error('Invalid session response');
+
+      const data = await res.json();
       setSessionData(data);
 
       const travelId = data.metadata.travel_id;
-      const travelResponse = await axios.get(
+      const travelRes = await axios.get(
         `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
       );
-      setTravelDetails(travelResponse.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to verify payment");
-      router.push("/");
+      setTravelDetails(travelRes.data);
+    } catch (err) {
+      console.error('Session fetch error:', err);
+      toast.error('Payment verification failed.');
+      router.push('/');
     }
-  }, [searchParams, router]);
+  }, [router, searchParams]);
 
   useEffect(() => {
     if (!loading && !userInfo) {
-      toast.error("Please login to complete booking");
-      router.push("/login");
+      toast.error('Please login to view booking.');
+      router.push('/login');
     } else if (!loading && userInfo) {
       fetchSessionData();
     }
@@ -137,61 +129,41 @@ const SuccessPay = () => {
 
   const copyToClipboard = () => {
     setIsCopying(true);
-    navigator.clipboard.writeText(bookingId)
-      .then(() => {
-        toast.success("Booking ID copied to clipboard");
-      })
-      .catch(() => {
-        toast.error("Failed to copy");
-      })
-      .finally(() => {
-        setTimeout(() => setIsCopying(false), 1000);
-      });
+    navigator.clipboard
+      .writeText(bookingId)
+      .then(() => toast.success('Booking ID copied'))
+      .catch(() => toast.error('Copy failed'))
+      .finally(() => setTimeout(() => setIsCopying(false), 1000));
   };
 
   return (
-    <div className="payment-success-container">
-      <div className="payment-success-card">
-        <CheckCircle className="payment-success-icon" size={60} />
-        <h1 className="payment-success-title">Payment Successful!</h1>
+    <div className="payment-success-container p-6 max-w-xl mx-auto text-center">
+      <div className="payment-success-card bg-white shadow-lg rounded-xl p-8">
+        <CheckCircle className="text-green-500 mx-auto mb-4" size={60} />
+        <h1 className="text-2xl font-bold mb-4">Payment Successful!</h1>
 
         {bookingId ? (
           <>
-            <p className="payment-success-message">
-              Your booking has been confirmed with ID:
-            </p>
-            <div className="booking-id-container">
-              <span className="booking-id">#{bookingId}</span>
-              <button
-                onClick={copyToClipboard}
-                className="copy-button"
-                disabled={isCopying}
-              >
+            <p className="mb-2">Your booking has been confirmed with ID:</p>
+            <div className="flex justify-center items-center gap-2 mb-4">
+              <span className="font-mono text-lg text-blue-600">#{bookingId}</span>
+              <button onClick={copyToClipboard} disabled={isCopying}>
                 {isCopying ? (
-                  <Loader2 className="copy-icon animate-spin" size={16} />
+                  <Loader2 className="animate-spin text-gray-500" size={16} />
                 ) : (
-                  <Copy className="copy-icon" size={16} />
+                  <Copy className="text-gray-700" size={16} />
                 )}
               </button>
             </div>
-            <p className="payment-note">
+            <p className="text-sm text-gray-500 mb-6">
               A confirmation has been sent to your email.
             </p>
-
-            <div className="mt-6">
-              <Button
-                onClick={() => router.push(`/bookings`)}
-                className="view-booking-button"
-              >
-                View Your Booking Details
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
+            <Button onClick={() => router.push('/bookings')}>
+              View Your Booking Details <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
           </>
         ) : (
-          <p className="payment-success-message">
-            Processing your booking... Please wait.
-          </p>
+          <p className="text-gray-600">Processing your booking... Please wait.</p>
         )}
       </div>
     </div>
@@ -199,6 +171,3 @@ const SuccessPay = () => {
 };
 
 export default SuccessPay;
-
-
-

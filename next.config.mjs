@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  exportPathMap: async function (defaultPathMap) {
-    // Remove /successPay from static export
-    delete defaultPathMap['/successPay'];
-    return defaultPathMap;
-  },
+  // Remove the output: 'export' if you need dynamic server-side functionality
+  // output: 'export', // Only use this if you're doing full static export
 };
 
 export default nextConfig;
-
-

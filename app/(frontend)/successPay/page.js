@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -7,9 +10,6 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { CheckCircle, Copy, Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-// 🚫 Disable prerendering
-export const dynamic = 'force-dynamic';
 
 const SuccessPay = () => {
   const router = useRouter();
@@ -31,11 +31,7 @@ const SuccessPay = () => {
       await axios.put(
         `http://127.0.0.1:8000/travels/update/${travelId}`,
         { seats: updatedSeats },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        { headers: { 'Content-Type': 'application/json' } }
       );
 
       return true;

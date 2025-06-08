@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  exportPathMap: async function (defaultPathMap) {
-    // Remove /successPay from static export
-    delete defaultPathMap['/successPay'];
-    return defaultPathMap;
-  },
+  reactStrictMode: true,
+  // ❌ DO NOT use output: 'export'
+  // ✅ This enables dynamic rendering (handled automatically by Next.js)
 };
 
 export default nextConfig;
-
-

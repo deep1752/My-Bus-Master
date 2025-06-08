@@ -23,7 +23,7 @@ const BookNowPage = () => {
   useEffect(() => {
     const fetchTravels = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/travels/get");
+        const response = await fetch("https://my-bus-api.onrender.com/travels/get");
         if (!response.ok) {
           throw new Error("Failed to fetch travels");
         }

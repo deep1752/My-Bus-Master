@@ -12,7 +12,7 @@ export default function ViewUserDetails() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://127.0.0.1:8000/users/users?user_id=${id}`)
+    fetch(`https://my-bus-api.onrender.com/users/users?user_id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         setUser(data[0]);

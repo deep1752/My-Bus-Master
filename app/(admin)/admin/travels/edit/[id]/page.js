@@ -96,7 +96,7 @@ export default function EditTravel() {
   useEffect(() => {
     if (!travelId) return;
 
-    fetch(`http://127.0.0.1:8000/travels/get_by_id/${travelId}`)
+    fetch(`https://my-bus-api.onrender.com/travels/get_by_id/${travelId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch travel data");
         return res.json();
@@ -170,7 +170,7 @@ export default function EditTravel() {
     }
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/travels/update/${travelId}`, {
+      const res = await fetch(`https://my-bus-api.onrender.com/travels/update/${travelId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -47,7 +47,7 @@ export const UserContext = ({ children }) => {
     try {
       setLoading(true); // Start loading while fetching
 
-      const res = await fetch("http://127.0.0.1:8000/users/profile", {
+      const res = await fetch("https://my-bus-api.onrender.com/users/profile", {
         headers: {
           Authorization: `Bearer ${authToken}`, // Auth header with token
           "Content-Type": "application/json",

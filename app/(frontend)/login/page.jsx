@@ -62,7 +62,7 @@ export default function LoginPage() {
   // 🎯 Form submission handler
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+      const response = await fetch("https://my-bus-api.onrender.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

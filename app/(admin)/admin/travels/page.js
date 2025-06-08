@@ -24,7 +24,7 @@ export default function TravelsManager({ onEdit, onAdd }) {
   const fetchTravels = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:8000/travels/get");
+      const response = await fetch("https://my-bus-api.onrender.com/travels/get");
       const data = await response.json();
 
       const sortedData = data.sort((a, b) => {
@@ -54,7 +54,7 @@ export default function TravelsManager({ onEdit, onAdd }) {
 
     try {
       const deleteRequests = idList.map((id) =>
-        fetch(`http://127.0.0.1:8000/travels/delete/${id}`, {
+        fetch(`https://my-bus-api.onrender.com/travels/delete/${id}`, {
           method: "DELETE",
         })
       );

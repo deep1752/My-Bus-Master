@@ -39,11 +39,11 @@ export default function LoginPage() {
   const onSubmit = async (data) => {
     try {
       // Login request
-      const res = await axios.post("http://127.0.0.1:8000/auth/login", data);
+      const res = await axios.post("https://my-bus-api.onrender.com/auth/login", data);
       const token = res.data.access_token;
 
       // Fetch user profile with the token
-      const profile = await axios.get("http://127.0.0.1:8000/users/profile", {
+      const profile = await axios.get("https://my-bus-api.onrender.com/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

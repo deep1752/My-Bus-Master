@@ -23,12 +23,12 @@ const SuccessPay = () => {
   const updateAvailableSeats = useCallback(async (travelId, bookedSeats) => {
     try {
       const { data } = await axios.get(
-        `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
+        `https://my-bus-api.onrender.com/travels/get_by_id/${travelId}`
       );
       const updatedSeats = data.seats - bookedSeats;
 
       await axios.put(
-        `http://127.0.0.1:8000/travels/update/${travelId}`,
+        `https://my-bus-api.onrender.com/travels/update/${travelId}`,
         { seats: updatedSeats },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -60,7 +60,7 @@ const SuccessPay = () => {
 
     try {
       const { data, status } = await axios.post(
-        'http://127.0.0.1:8000/bookings/post',
+        'https://my-bus-api.onrender.com/bookings/post',
         bookingData,
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -100,7 +100,7 @@ const SuccessPay = () => {
 
       const travelId = data.metadata.travel_id;
       const travelRes = await axios.get(
-        `http://127.0.0.1:8000/travels/get_by_id/${travelId}`
+        `https://my-bus-api.onrender.com/travels/get_by_id/${travelId}`
       );
       setTravelDetails(travelRes.data);
     } catch (err) {

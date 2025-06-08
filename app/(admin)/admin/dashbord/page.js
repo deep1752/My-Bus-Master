@@ -22,9 +22,9 @@ const AdminDashboard = () => {
     try {
       // Fetch travels, bookings, and users in parallel using Promise.all
       const [travelsRes, bookingsRes, usersRes] = await Promise.all([
-        axios.get('http://127.0.0.1:8000/travels/get'),
-        axios.get('http://127.0.0.1:8000/bookings/get'),
-        axios.get('http://127.0.0.1:8000/users/users'),
+        axios.get('https://my-bus-api.onrender.com/travels/get'),
+        axios.get('https://my-bus-api.onrender.com/bookings/get'),
+        axios.get('https://my-bus-api.onrender.com/users/users'),
       ]);
 
       // Store API data in state; fallback to empty array if response is undefined/null

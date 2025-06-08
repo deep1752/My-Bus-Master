@@ -22,7 +22,7 @@ export default function AddBooking() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/travels/get")
+    fetch("https://my-bus-api.onrender.com/travels/get")
       .then((res) => res.json())
       .then((data) => setTravels(data))
       .catch((err) => {
@@ -126,7 +126,7 @@ export default function AddBooking() {
           updated_at: now,
         };
 
-        const res = await fetch("http://127.0.0.1:8000/bookings/post", {
+        const res = await fetch("https://my-bus-api.onrender.com/bookings/post", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -291,3 +291,7 @@ export default function AddBooking() {
     </div>
   );
 }
+
+
+
+

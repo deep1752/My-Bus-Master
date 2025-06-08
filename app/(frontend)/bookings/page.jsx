@@ -25,7 +25,7 @@ const BookingsPage = () => {
     if (userInfo?.id) {
       const fetchBookings = async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/bookings/user/${userInfo.id}`);
+          const response = await fetch(`https://my-bus-api.onrender.com/bookings/user/${userInfo.id}`);
           if (!response.ok) {
             throw new Error('Failed to fetch bookings');
           }
@@ -67,7 +67,7 @@ const BookingsPage = () => {
     setCancellingId(bookingId);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://127.0.0.1:8000/bookings/delete/${bookingId}`, {
+      const response = await fetch(`https://my-bus-api.onrender.com/bookings/delete/${bookingId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -22,7 +22,7 @@ export default function AddBooking() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("https://my-bus-api.onrender.com/travels/get")
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get`)
       .then((res) => res.json())
       .then((data) => setTravels(data))
       .catch((err) => {
@@ -126,7 +126,7 @@ export default function AddBooking() {
           updated_at: now,
         };
 
-        const res = await fetch("https://my-bus-api.onrender.com/bookings/post", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/post`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -291,6 +291,9 @@ export default function AddBooking() {
     </div>
   );
 }
+
+
+
 
 
 

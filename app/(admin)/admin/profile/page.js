@@ -23,7 +23,7 @@ export default function AdminProfile() {
       }
 
       try {
-        const response = await axios.get('https://my-bus-api.onrender.com/users/profile', {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -58,7 +58,7 @@ export default function AdminProfile() {
       };
 
       const response = await axios.put(
-        `https://my-bus-api.onrender.com/users/update/${adminData.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/update/${adminData.id}`,
         updatedUser,
         {
           headers: {

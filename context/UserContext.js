@@ -47,7 +47,7 @@ export const UserContext = ({ children }) => {
     try {
       setLoading(true); // Start loading while fetching
 
-      const res = await fetch("https://my-bus-api.onrender.com/users/profile", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/profile`, {
         headers: {
           Authorization: `Bearer ${authToken}`, // Auth header with token
           "Content-Type": "application/json",

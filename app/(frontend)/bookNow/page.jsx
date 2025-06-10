@@ -23,7 +23,7 @@ const BookNowPage = () => {
   useEffect(() => {
     const fetchTravels = async () => {
       try {
-        const response = await fetch("https://my-bus-api.onrender.com/travels/get");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get`);
         if (!response.ok) {
           throw new Error("Failed to fetch travels");
         }

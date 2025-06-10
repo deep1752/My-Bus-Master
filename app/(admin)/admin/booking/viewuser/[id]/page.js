@@ -12,7 +12,7 @@ export default function ViewUserDetails() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`https://my-bus-api.onrender.com/users/users?user_id=${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users?user_id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         setUser(data[0]);

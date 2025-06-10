@@ -23,7 +23,7 @@ export default function EditBooking() {
 
   // Fetch travel routes
   useEffect(() => {
-    fetch("https://my-bus-api.onrender.com/travels/get")
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get`)
       .then((res) => res.json())
       .then((data) => setTravels(data))
       .catch(() => toast.error("❌ Failed to load travel routes"));
@@ -31,7 +31,7 @@ export default function EditBooking() {
 
   // Fetch booking details
   useEffect(() => {
-    fetch(`https://my-bus-api.onrender.com/bookings/get_by_id/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/get_by_id/${id}`)
       .then((res) => res.json())
       .then((booking) => {
         setFormData({
@@ -117,7 +117,7 @@ export default function EditBooking() {
         updated_at: new Date().toISOString(),
       };
 
-      const res = await fetch(`https://my-bus-api.onrender.com/bookings/update/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/update/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

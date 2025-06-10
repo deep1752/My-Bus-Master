@@ -34,7 +34,7 @@ const ContactUs = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("https://my-bus-api.onrender.com/contact/", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/contact/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

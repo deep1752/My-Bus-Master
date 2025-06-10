@@ -20,12 +20,12 @@ const SuccessPayClient = () => {
   const updateAvailableSeats = useCallback(async (travelId, bookedSeats) => {
     try {
       const { data } = await axios.get(
-        `https://my-bus-api.onrender.com/travels/get_by_id/${travelId}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get_by_id/${travelId}`
       );
       const updatedSeats = data.seats - bookedSeats;
 
       await axios.put(
-        `https://my-bus-api.onrender.com/travels/update/${travelId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/update/${travelId}`,
         { seats: updatedSeats },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -57,7 +57,7 @@ const SuccessPayClient = () => {
 
     try {
       const { data, status } = await axios.post(
-        'https://my-bus-api.onrender.com/bookings/post',
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/post`,
         bookingData,
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -97,7 +97,7 @@ const SuccessPayClient = () => {
 
       const travelId = data.metadata.travel_id;
       const travelRes = await axios.get(
-        `https://my-bus-api.onrender.com/travels/get_by_id/${travelId}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get_by_id/${travelId}`
       );
       setTravelDetails(travelRes.data);
     } catch (err) {

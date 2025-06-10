@@ -45,7 +45,7 @@ export default function ProfilePage() {
     try {
       setIsSaving(true);
       const res = await fetch(
-        `https://my-bus-api.onrender.com/users/update/${userInfo.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/update/${userInfo.id}`,
         {
           method: "PUT",
           headers: {

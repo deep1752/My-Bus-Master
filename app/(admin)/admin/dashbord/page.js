@@ -22,9 +22,9 @@ const AdminDashboard = () => {
     try {
       // Fetch travels, bookings, and users in parallel using Promise.all
       const [travelsRes, bookingsRes, usersRes] = await Promise.all([
-        axios.get('https://my-bus-api.onrender.com/travels/get'),
-        axios.get('https://my-bus-api.onrender.com/bookings/get'),
-        axios.get('https://my-bus-api.onrender.com/users/users'),
+        axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/get`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/get`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users`),
       ]);
 
       // Store API data in state; fallback to empty array if response is undefined/null

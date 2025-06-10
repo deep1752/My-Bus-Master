@@ -96,7 +96,7 @@ export default function AddTravels() {
           updated_at: now,
         };
 
-        const res = await fetch("https://my-bus-api.onrender.com/travels/post", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travels/post`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

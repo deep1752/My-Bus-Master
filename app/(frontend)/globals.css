@@ -285,6 +285,24 @@ body.scrolled-nav {
 }
 
 
+@media (max-width: 991px) {
+  .navbar__links {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--primary-red), var(--primary-dark));
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 1rem;
+    display: none;
+  }
+
+  .navbar__links.active {
+    display: flex;
+  }
+}
 
 
 
@@ -5151,3 +5169,23 @@ careers */
     padding: 1.5rem !important;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -22,7 +22,7 @@ export default function BookingManager() {
 
   // Fetch bookings on component mount
   useEffect(() => {
-    fetch("https://my-bus-api.onrender.com/bookings/get")
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/get`)
       .then((res) => res.json())
       .then((data) => {
         setBookings(data);
@@ -44,7 +44,7 @@ export default function BookingManager() {
 
     try {
       const deleteRequests = idList.map((id) =>
-        fetch(`https://my-bus-api.onrender.com/bookings/delete/${id}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/delete/${id}`, {
           method: "DELETE",
         })
       );

@@ -13,6 +13,8 @@ const Navbar = ({ Searchproducts }) => {
   const { userInfo, setUserInfo } = useUserContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+
 
   return (
     <nav className="navbar">
@@ -20,13 +22,21 @@ const Navbar = ({ Searchproducts }) => {
       <Link href="/" className="navbar__logo">
         {/* Either use an image logo (make sure Logo.png exists in public folder) */}
         {/* <Image src="/Logo.png" width={140} height={25} alt="BusExpress logo" /> */}
-        
         {/* Or use text logo */}
         <span className="navbar__logo-text">BusExpress</span>
       </Link>
 
+      <button
+        className="navbar__mobile-menu"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        ☰
+      </button>
+
+
       {/* Nav Links */}
-      <ul className="navbar__links">
+      <ul className={`navbar__links ${menuOpen ? "active" : ""}`}>
+
         <li className="navbar__link-item">
           <Link href="/" className="navbar__link">Home</Link>
         </li>
@@ -52,7 +62,7 @@ const Navbar = ({ Searchproducts }) => {
 
       <div className="navbar__actions">
         {/* User Login/Dropdown */}
-        {userInfo ? (
+        {userInfo ? (   
           <div className="navbar__user-dropdown">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
@@ -88,7 +98,7 @@ const Navbar = ({ Searchproducts }) => {
           <Link href="/login">
             <button className="navbar__login-button">
               <CgUser size={22} className="navbar__user-icon" />
-              <span>Login/Sign Up</span>
+              {/* <span>Login/Sign Up</span> */}
             </button>
           </Link>
         )}
